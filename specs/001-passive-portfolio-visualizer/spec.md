@@ -175,9 +175,13 @@ profile.
   pick.
 - **Amount is zero, blank, or negative**: block the run with a clear, friendly
   message; never compute a misleading chart.
-- **Chosen period has missing data** for an asset class (e.g., a fund did not
-  exist yet): warn plainly and either shorten to the available range or exclude
-  that strategy — never silently invent numbers.
+- **Chosen period has missing data** for an asset class — whether an asset is
+  before its inception date, only partially covers the chosen range, has a
+  mid-series hole (a gap in the middle of an otherwise complete series), or a
+  fund is entirely absent: in **every** one of these cases the system MUST warn
+  plainly and either shorten to the available range or exclude that strategy. It
+  MUST never silently invent, interpolate, or carry-forward numbers to fill a
+  gap.
 - **Comparing strategies with different start dates**: align on the latest
   common start and explain the limitation in plain words.
 - **Stale or invalid shareable link**: a link may encode a strategy that was
@@ -186,9 +190,16 @@ profile.
   encoded, and offer the nearest still-valid strategy and/or range — never
   silently invent values, and never hard-wall the user with a raw error.
 - **Selected period is a market crash**: show the real losses; do not soften or
-  hide drawdowns.
+  hide drawdowns. The display MUST also carry **contextual labeling** that
+  prevents panic misinterpretation — e.g. noting the period shown includes a
+  known historical crash, that drawdowns are peak-to-trough (not a total loss),
+  and that the figure is historical — so a beginner does not read a deep dip as
+  "this strategy is broken" or "you would have lost everything".
 - **Slow or offline connection**: show loading states and a friendly offline
-  message; never a blank screen or raw error.
+  message; never a blank screen or raw error. The system MUST NEVER display
+  stale or partially-computed numbers while data is loading or unavailable —
+  only a loading indicator or a friendly error, so no misleading figure ever
+  appears.
 - **Very small screen (mobile)**: charts and tables reflow to stay readable and
   usable.
 - **User relies on keyboard or a screen reader**: every action is reachable
@@ -203,8 +214,13 @@ profile.
 
 - **FR-001**: System MUST present a curated library of predefined, well-known
   passive investment strategies — a focused set of **5–7 archetypes** spanning
-  the risk spectrum (conservative, balanced, aggressive) — each with a
-  plain-language description and "who it suits" guidance.
+  the risk spectrum (conservative, balanced, aggressive). Each strategy MUST
+  carry: a plain-language short description; a "who it suits" guidance that
+  references **specific investor profiles and situations** (concrete horizon
+  bands and risk tolerances, e.g. "investors who need the money within 5 years
+  and cannot stomach a drop" — not generic adjectives like "suitable for many");
+  and a per-strategy **growth-versus-calmness trade-off** stated on the
+  strategy's own detail view (not only inside the comparison view).
 - **FR-002**: Each strategy MUST display its asset-allocation breakdown in an
   at-a-glance visual (percentage per asset class).
 - **FR-003**: Every financial term MUST offer a beginner-friendly definition on
@@ -215,7 +231,12 @@ profile.
   (b) an inline on-demand definition at its point of use. The acceptance bar
   is **zero undefined acronyms or un-glossaried financial terms** across the
   core flow (explore → visualize → compare → recommend); this is verifiable by
-  enumerating every term/acronym rendered and asserting each is defined.
+  enumerating every term/acronym rendered and asserting each is defined. The
+  **term inventory is bounded**: a "financial term" is any word, phrase, or
+  acronym relating to investing, markets, or portfolio mechanics that is not
+  everyday common vocabulary (e.g. "bonds", "volatility", "CAGR", "drawdown",
+  "rebalance", "equity", "Treasury" count; "money", "growth", "drop" do not).
+  The glossary is the single source of truth for this inventory.
 - **FR-004**: System MUST let the user choose a strategy, enter a starting
   amount and a historical date range, and see how that amount would have grown
   across the period.
@@ -232,10 +253,23 @@ profile.
     returns (monthly std-dev × √12); a bigger number means a bumpier ride.
   - **Worst drawdown** — largest peak-to-trough decline observed in the series
     (max drawdown); never smoothed or averaged.
+
+  These four metrics MUST be computed with **identical definitions, units, and
+  time bases across every view** that shows them — the single-strategy run, the
+  comparison table, and the recommendation's growth/risk recap — so a given
+  number means the same thing wherever it appears.
 - **FR-006**: System MUST let the user compare 2–3 strategies over the same
   amount and period, shown on one overlaid chart with an aligned metrics table.
+  If **some (not all)** selected strategies lack data for the chosen period,
+  the comparison MUST show the strategies that do have data and plainly flag
+  which were excluded and why — never silently drop a strategy, and never
+  invent numbers for the excluded one.
 - **FR-007**: System MUST present gains and losses truthfully; it MUST never
-  hide, smooth, or soften drawdowns.
+  hide, smooth, or soften drawdowns. This honesty rule applies across **every
+  chart type that plots value over time**: the single-strategy growth chart,
+  the multi-strategy comparison overlay, and the dedicated worst-drawdown view.
+  The 2008 and 2020 crashes (within the bundled 2000–present window) MUST
+  appear as real, visible dips in each of them.
 - **FR-008**: System MUST let the user answer a short set of questions (time
   horizon, risk comfort) and recommend one best-fit strategy via a fixed
   **rule-based lookup** (horizon + risk tier → one strategy), with a
@@ -251,12 +285,17 @@ profile.
   execution.
 - **FR-010**: System MUST be usable on both desktop and mobile, with every
   action reachable via keyboard and readable by screen readers.
-- **FR-011**: System MUST display a persistent, plain-language disclaimer:
-  educational tool, not financial advice; past performance does not guarantee
-  future results; and the source and vintage of the underlying data. In
-  addition, the system MUST disclose to the end user — in plain language and
-  in a collapsible "how these numbers are computed" area — all material
-  methodology and data limitations that affect the numbers shown:
+- **FR-011**: System MUST display a **persistent, always-visible** disclaimer
+  containing the core notice — *educational tool, not financial advice; past
+  performance does not guarantee future results* — plus the data source and
+  vintage. "Persistent" is quantified as: the core notice is visible in the
+  default layout on every view (a fixed footer or header strip), not hidden
+  behind a click or reduced to a footer-only popover. The detailed methodology
+  below lives in a collapsible "how these numbers are computed" area, so it
+  stays optional-on-demand without weakening the always-visible core notice. In
+  addition, the system MUST disclose to the end user — in plain language and in
+  that collapsible area — all material methodology and data limitations that
+  affect the numbers shown:
   - the **backtest methodology** (notably the rebalancing frequency, e.g.
     monthly);
   - any **data proxy** or substitution (e.g., an intermediate-Treasury series
@@ -264,10 +303,24 @@ profile.
   - the **data source(s), vintage, and refresh cadence** (an "as-of" date);
   - the **comparison alignment rule** (e.g., strategies are aligned on the
     latest common start date when their inception dates differ).
-  These disclosures MUST be reachable from the outputs they affect (charts,
-  comparison, recommendation), not buried only in developer documentation.
+  These disclosures MUST be reachable from **each output they affect** — every
+  growth chart, the metric panel/table, the comparison view, the
+  recommendation, and any shareable link — not buried only in developer
+  documentation or reduced to a single global footer.
 - **FR-012**: System MUST gracefully handle missing data, invalid input, and
   offline states with friendly messages — never a blank screen or raw error.
+- **FR-013**: System MUST NOT produce forward-looking "expected future return"
+  projections, Monte Carlo forecasts, or probability-of-success estimates in v1.
+  This is an **enforced scope boundary**, not merely an assumption: every figure
+  shown MUST be a computed historical result, clearly labeled as historical, so
+  a beginner is never misled about what the future will do.
+- **FR-014**: The bundled dataset MUST be validated at build time — every
+  return series strictly ascending by month, no duplicate months, no
+  undocumented gaps, and every strategy's allocation weights summing to 1.0.
+  Any anomaly in the dataset **itself** MUST fail the build or be plainly
+  documented as a known gap before shipping — never shipped silently. This is
+  distinct from a user choosing a period with missing data (FR-012): it guards
+  the integrity of the data the app ships with.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -317,13 +370,24 @@ profile.
 - **Currency & markets**: The bundled historical dataset covers broad global
   asset classes (US and international equities; government and corporate bonds;
   and other classes used in well-known passive strategies), with amounts shown
-  in USD as the primary currency.
+  in USD as the primary currency. Because the audience includes non-US
+  beginners, the **USD-denominated, developed-market-weighted** scope MUST be
+  disclosed to the end user (FR-011), so a beginner outside the US understands
+  the figures are in USD and lean toward US/developed markets.
 - **Data source**: Historical performance is computed from a curated,
   periodically-refreshed dataset of market-index returns (a backtest), not live
   account data. The bundled history spans **2000 to present (~25 years)**,
   which covers the 2008 and 2020 crashes and the full availability window of
   modern index funds; the specific data provider and refresh cadence are
   decided at planning time.
+- **Data representativeness (known limitation)**: The bundled dataset is a
+  curated academic stitch (Fama–French + FRED) chosen for legal
+  redistributability and educational fidelity — **not** a commercial-grade
+  fund database. It is "representative enough" to teach how these strategies
+  behave over decades, but it is NOT a literal mirror of any specific retail
+  index fund's returns. This limitation MUST be disclosed to the end user
+  (FR-011) as a known caveat, alongside the proxy note, so no one mistakes the
+  numbers for an exact fund track record.
 - **Scope — no money movement**: The app is read-only and educational. It never
   links to bank or brokerage accounts and never places trades.
 - **Scope — historical, not predictive**: v1 shows historical backtests only.

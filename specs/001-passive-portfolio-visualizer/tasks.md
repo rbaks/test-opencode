@@ -26,11 +26,11 @@
 
 **Purpose**: Project initialization, toolchain, and design-token foundation
 
-- [ ] T001 Initialize Vite + React 18 + TypeScript project scaffold (package.json, vite.config.ts, tsconfig.json with strict mode, index.html, src/main.tsx)
-- [ ] T002 Install dependencies in package.json: runtime (react, react-dom, react-router-dom, tailwindcss, lightweight-charts, recharts, react-day-picker, sonner) and dev (vitest, @testing-library/react, @testing-library/jest-dom, eslint, prettier, @vitejs/plugin-react)
-- [ ] T003 [P] Configure Tailwind CSS + shadcn/ui design tokens (tailwind.config.ts with chart/color tokens, globals.css with CSS variables, components.json) — constitution UI mandate
-- [ ] T004 [P] Configure Vitest + React Testing Library (test setup file, jsdom environment, npm scripts: `test`, `test:run`, `typecheck`, `lint`) in vite.config.ts and package.json
-- [ ] T005 [P] Configure ESLint + Prettier with TypeScript and React rules (.eslintrc.cjs, .prettierrc, path aliases `@/` → `src/`)
+- [X] T001 Initialize Vite + React 18 + TypeScript project scaffold (package.json, vite.config.ts, tsconfig.json with strict mode, index.html, src/main.tsx)
+- [X] T002 Install dependencies in package.json: runtime (react, react-dom, react-router-dom, tailwindcss, lightweight-charts, recharts, react-day-picker, sonner) and dev (vitest, @testing-library/react, @testing-library/jest-dom, eslint, prettier, @vitejs/plugin-react)
+- [X] T003 [P] Configure Tailwind CSS + shadcn/ui design tokens (tailwind.config.ts with chart/color tokens, globals.css with CSS variables, components.json) — constitution UI mandate
+- [X] T004 [P] Configure Vitest + React Testing Library (test setup file, jsdom environment, npm scripts: `test`, `test:run`, `typecheck`, `lint`) in vite.config.ts and package.json
+- [X] T005 [P] Configure ESLint + Prettier with TypeScript and React rules (.eslintrc.cjs, .prettierrc, path aliases `@/` → `src/`)
 
 ---
 
