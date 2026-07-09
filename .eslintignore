@@ -4,3 +4,6 @@ build/
 coverage/
 *.log
 .env*
+
+# Vendored shadcn/ui generated components (registry-managed, not hand-written)
+src/components/ui/

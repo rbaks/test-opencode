@@ -40,18 +40,18 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Define shared TypeScript types (Strategy, AssetClass, Allocation, ReturnSeries, GrowthPoint, BacktestRunInput, BacktestRun, Metric, MetricKey, UserPreferenceSet, TimeHorizon, RiskComfort, ShareableState, RunWarning, BacktestError) in src/types/index.ts
-- [ ] T007 [P] Bundle the 5 asset-class metadata records (id, name, category, dataSource, proxyNote, glossary, dataStartMonth) in src/data/asset-classes.ts — sourced per research.md §R-2
-- [ ] T008 [P] Define the 6 predefined strategy recipes + metadata (id, name, shortDescription, whoItSuits, tradeoffs, riskTier, allocations, earliestStartMonth) in src/data/strategies.ts — per data-model.md §Strategy table
-- [ ] T009 Implement data validation: assert every strategy's allocation weights sum to 1.0 (± epsilon) and every id is URL-safe/unique, in src/data/validate.ts and tests/unit/data.test.ts (depends on T007, T008)
-- [ ] T009.5 [P] Author src/data/DATA_SOURCES.md — attribution (Kenneth French Data Library / Tuck-Dartmouth, FRED / St. Louis Fed), data vintage + "as-of" date, annual refresh cadence, and the documented intermediate-Treasury proxy for the bond sleeve — per FR-011 and research.md §R-2; sourced into the disclaimer (T015)
-- [ ] T010 [P] Implement the glossary dictionary (every financial term/acronym → one-line beginner definition, satisfying FR-003 term-coverage rule) in src/data/glossary.ts
-- [ ] T011 [P] Implement URL state encode/decode (ShareableState ↔ flat query params: s, a, from, to, cmp, view, quiz) in src/lib/url-state.ts per contracts/shareable-link.md — decode is total, never throws
-- [ ] T012 Test URL state round-trip (decode(encode(state)) deep-equals state) and invalid-input dropping in tests/unit/url-state.test.ts (depends on T011)
-- [ ] T013 [P] Create shared state components (EmptyState, LoadingState, ErrorState, OfflineState) using shadcn Empty/Skeleton/Spinner/Alert in src/components/states/
-- [ ] T014 Build App shell: layout, header, view-switching that reads/writes the `view` query param via useSearchParams, and a panel slot per view, in src/App.tsx and src/components/layout/AppHeader.tsx (depends on T011, T013)
-- [ ] T015 [P] Create persistent disclaimer + collapsible "how these numbers are computed" disclosure (educational-not-advice notice, data source, vintage, rebalance frequency, proxy note, comparison-alignment rule) per FR-011 in src/components/Disclaimer.tsx and src/components/layout/AppFooter.tsx
-- [ ] T016 [P] Create the GlossaryTerm component: wraps any financial term in a shadcn Tooltip that appears on hover AND keyboard focus (FR-003) in src/components/GlossaryTerm.tsx
+- [X] T006 Define shared TypeScript types (Strategy, AssetClass, Allocation, ReturnSeries, GrowthPoint, BacktestRunInput, BacktestRun, Metric, MetricKey, UserPreferenceSet, TimeHorizon, RiskComfort, ShareableState, RunWarning, BacktestError) in src/types/index.ts
+- [X] T007 [P] Bundle the 5 asset-class metadata records (id, name, category, dataSource, proxyNote, glossary, dataStartMonth) in src/data/asset-classes.ts — sourced per research.md §R-2
+- [X] T008 [P] Define the 6 predefined strategy recipes + metadata (id, name, shortDescription, whoItSuits, tradeoffs, riskTier, allocations, earliestStartMonth) in src/data/strategies.ts — per data-model.md §Strategy table
+- [X] T009 Implement data validation: assert every strategy's allocation weights sum to 1.0 (± epsilon) and every id is URL-safe/unique, in src/data/validate.ts and tests/unit/data.test.ts (depends on T007, T008)
+- [X] T009.5 [P] Author src/data/DATA_SOURCES.md — attribution (Kenneth French Data Library / Tuck-Dartmouth, FRED / St. Louis Fed), data vintage + "as-of" date, annual refresh cadence, and the documented intermediate-Treasury proxy for the bond sleeve — per FR-011 and research.md §R-2; sourced into the disclaimer (T015)
+- [X] T010 [P] Implement the glossary dictionary (every financial term/acronym → one-line beginner definition, satisfying FR-003 term-coverage rule) in src/data/glossary.ts
+- [X] T011 [P] Implement URL state encode/decode (ShareableState ↔ flat query params: s, a, from, to, cmp, view, quiz) in src/lib/url-state.ts per contracts/shareable-link.md — decode is total, never throws
+- [X] T012 Test URL state round-trip (decode(encode(state)) deep-equals state) and invalid-input dropping in tests/unit/url-state.test.ts (depends on T011)
+- [X] T013 [P] Create shared state components (EmptyState, LoadingState, ErrorState, OfflineState) using shadcn Empty/Skeleton/Spinner/Alert in src/components/states/
+- [X] T014 Build App shell: layout, header, view-switching that reads/writes the `view` query param via useSearchParams, and a panel slot per view, in src/App.tsx and src/components/layout/AppHeader.tsx (depends on T011, T013)
+- [X] T015 [P] Create persistent disclaimer + collapsible "how these numbers are computed" disclosure (educational-not-advice notice, data source, vintage, rebalance frequency, proxy note, comparison-alignment rule) per FR-011 in src/components/Disclaimer.tsx and src/components/layout/AppFooter.tsx
+- [X] T016 [P] Create the GlossaryTerm component: wraps any financial term in a shadcn Tooltip that appears on hover AND keyboard focus (FR-003) in src/components/GlossaryTerm.tsx
 
 **Checkpoint**: Foundation ready — types, data, URL state, app shell, disclaimer, and glossary all in place. User story implementation can now begin.
 
