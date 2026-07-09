@@ -65,17 +65,17 @@
 
 ### Tests for User Story 1
 
-- [ ] T017 [P] [US1] Test the gallery renders all 6 strategy cards with name + short description in tests/components/explore.test.tsx
-- [ ] T018 [P] [US1] Test selecting a strategy renders the detail view with allocation breakdown, whoItSuits, and tradeoffs in tests/components/explore.test.tsx
-- [ ] T019 [P] [US1] Test a glossary term shows its plain-language definition on keyboard focus in tests/components/explore.test.tsx
+- [X] T017 [P] [US1] Test the gallery renders all 6 strategy cards with name + short description in tests/components/explore.test.tsx
+- [X] T018 [P] [US1] Test selecting a strategy renders the detail view with allocation breakdown, whoItSuits, and tradeoffs in tests/components/explore.test.tsx
+- [X] T019 [P] [US1] Test a glossary term shows its plain-language definition on keyboard focus in tests/components/explore.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T020 [P] [US1] Create StrategyCard component (name, short description, risk-tier badge) using shadcn Card in src/components/strategy/StrategyCard.tsx
-- [ ] T021 [P] [US1] Create AllocationDonut component (percentage per asset class) using the shadcn/ui chart block (Recharts Pie, innerRadius) — the justified categorical exception per research.md §R-6 — in src/components/strategy/AllocationDonut.tsx
-- [ ] T022 [P] [US1] Create StrategyDetail component (title, description, whoItSuits, tradeoffs, allocation donut, glossary terms) in src/components/strategy/StrategyDetail.tsx (depends on T021)
-- [ ] T023 [US1] Build the ExplorePanel feature: a responsive Tailwind grid of StrategyCards + a detail view driven by the selected `s=` param, in src/features/explore/ExplorePanel.tsx (depends on T020, T022)
-- [ ] T024 [US1] Wire the ExplorePanel into the App shell and sync the selected strategy to the `s=` and `view=explore` URL params in src/App.tsx and src/hooks/useUrlState.ts (depends on T014, T023)
+- [X] T020 [P] [US1] Create StrategyCard component (name, short description, risk-tier badge) using shadcn Card in src/components/strategy/StrategyCard.tsx
+- [X] T021 [P] [US1] Create AllocationDonut component (percentage per asset class) using the shadcn/ui chart block (Recharts Pie, innerRadius) — the justified categorical exception per research.md §R-6 — in src/components/strategy/AllocationDonut.tsx
+- [X] T022 [P] [US1] Create StrategyDetail component (title, description, whoItSuits, tradeoffs, allocation donut, glossary terms) in src/components/strategy/StrategyDetail.tsx (depends on T021)
+- [X] T023 [US1] Build the ExplorePanel feature: a responsive Tailwind grid of StrategyCards + a detail view driven by the selected `s=` param, in src/features/explore/ExplorePanel.tsx (depends on T020, T022)
+- [X] T024 [US1] Wire the ExplorePanel into the App shell and sync the selected strategy to the `s=` and `view=explore` URL params in src/App.tsx and src/hooks/useUrlState.ts (depends on T014, T023)
 
 **Checkpoint**: User Story 1 is fully functional — the app is a usable educational product on its own.
 
