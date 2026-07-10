@@ -193,3 +193,22 @@ Three operations: **ingest** (add a source), **query** (answer from the wiki),
 **lint** (health check). Rules: `wiki/raw/` is immutable; the assistant fully
 owns `wiki/pages/`, `wiki/index.md`, and `wiki/log.md`; never delete during
 lint without user approval.
+
+## Deployment
+
+The app is a **Vite + React** SPA hosted on **Vercel**, auto-deployed from the
+GitHub repo `github.com/rbaks/test-opencode`.
+
+- **Platform**: Vercel. The GitHub repo is connected via the Vercel dashboard
+  (sign in with GitHub → Import Project). No GitHub Action is needed — Vercel
+  listens for pushes itself.
+- **Production branch**: `main`. Every push to `main` triggers a production
+  deploy. Pushes to other branches get a preview URL.
+- **Vercel auto-detects Vite**: Build Command `npm run build`, Output Directory
+  `dist`, Install Command `npm install`. These are filled in automatically on
+  import — no override needed.
+- **Routing**: `vercel.json` at repo root rewrites all routes to `index.html`
+  so client-side routes (`react-router-dom`) don't 404 on refresh/direct visit.
+  Do not delete it.
+- **Local build before pushing** (optional sanity check): `npm run build`
+  produces `dist/`. If the build fails locally it will fail on Vercel too.
