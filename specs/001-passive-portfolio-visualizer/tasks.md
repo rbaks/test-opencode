@@ -283,3 +283,9 @@ With multiple developers after Foundational completes:
 - The app is **frontend-only** — there is no backend, no database, no API, no secrets (research.md §R-1, §R-8)
 - Commit after each task or logical group; stop at any checkpoint to validate a story independently
 - The single justified charting exception is the categorical allocation **donut** (Recharts via shadcn `chart`) — all axis/time-series charts use TradingView Lightweight Charts v5 (research.md §R-5, §R-6)
+
+---
+
+## Phase 8: Convergence
+
+- [X] T066 Wire `assertDatasetValid()` (src/data/validate.ts) into the build or app entry so a malformed bundled dataset fails the build per FR-014 (partial) — the validator exists and is unit-tested (tests/unit/data.test.ts) but is never invoked by `npm run build` (`tsc -b && vite build`) or at runtime, so a bad strategy/asset-class definition would currently ship silently; complements T031's pending return-series build-time check
