@@ -212,3 +212,9 @@ GitHub repo `github.com/rbaks/test-opencode`.
   Do not delete it.
 - **Local build before pushing** (optional sanity check): `npm run build`
   produces `dist/`. If the build fails locally it will fail on Vercel too.
+- **Git auth**: the **GitHub CLI (`gh`)** is installed, authenticated as
+  `rbaks`, and wired as git's credential helper for HTTPS (`gh auth setup-git`
+  was run once). Use `gh` for any GitHub operation — create PRs/issues with
+  `gh pr create` / `gh issue create`, and push with plain `git push origin main`
+  (no password prompt). If `git push` ever fails with a username prompt, re-run
+  `gh auth setup-git` to restore the credential helper.
