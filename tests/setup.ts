@@ -18,6 +18,14 @@ class ResizeObserverStub {
 }
 window.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver
 
+// jsdom does not implement HTMLCanvasElement.prototype.getContext (it would
+// need the optional `canvas` npm package). TradingView Lightweight Charts
+// renders to <canvas>, so without a stub it logs a noisy error on every mount
+// and unmount. We stub it to return null silently — the chart still creates
+// its DOM (which is what our assertions target) and the visual pixels are not
+// asserted on.
+HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext
+
 afterEach(() => {
   cleanup()
 })

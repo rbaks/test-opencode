@@ -89,25 +89,25 @@
 
 ### Tests for User Story 2
 
-- [ ] T025 [P] [US2] Test the backtest engine produces the expected growth series from the bundled fixture and shows 2008/2020 dips honestly (FR-007) in tests/unit/backtest.test.ts
-- [ ] T026 [P] [US2] Test computeMetrics returns all four metrics, max-drawdown ≤ 0, and no NaN/Infinity in tests/unit/metrics.test.ts
-- [ ] T027 [P] [US2] Test runBacktest returns structured errors (INVALID_AMOUNT, INVALID_RANGE, NO_DATA) and never throws on bad input, in tests/unit/backtest.test.ts
-- [ ] T028 [P] [US2] Test the format helpers (formatPercent, formatCurrency, formatMonth) are locale-stable in tests/unit/format.test.ts
-- [ ] T029 [P] [US2] Test a run renders the growth chart and the four labeled metrics in tests/components/visualize.test.tsx
-- [ ] T030 [P] [US2] Test every chart is paired with a visually-hidden (sr-only) data table for screen readers (FR-010) in tests/components/visualize.test.tsx
+- [X] T025 [P] [US2] Test the backtest engine produces the expected growth series from the bundled fixture and shows 2008/2020 dips honestly (FR-007) in tests/unit/backtest.test.ts
+- [X] T026 [P] [US2] Test computeMetrics returns all four metrics, max-drawdown ≤ 0, and no NaN/Infinity in tests/unit/metrics.test.ts
+- [X] T027 [P] [US2] Test runBacktest returns structured errors (INVALID_AMOUNT, INVALID_RANGE, NO_DATA) and never throws on bad input, in tests/unit/backtest.test.ts
+- [X] T028 [P] [US2] Test the format helpers (formatPercent, formatCurrency, formatMonth) are locale-stable in tests/unit/format.test.ts
+- [X] T029 [P] [US2] Test a run renders the growth chart and the four labeled metrics in tests/components/visualize.test.tsx
+- [X] T030 [P] [US2] Test every chart is paired with a visually-hidden (sr-only) data table for screen readers (FR-010) in tests/components/visualize.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T031 [P] [US2] Bundle the monthly total-return series JSON for all 5 asset classes (Fama–French equities + FRED Treasuries/gold, 2000–present) under src/data/returns/ with a build-time series-integrity check (ascending months, no duplicates/gaps) in src/data/returns/index.ts
-- [ ] T032 [US2] Implement the format helpers (formatPercent, formatCurrency, formatMonth) as pure locale-stable functions in src/lib/format.ts (depends on T028 conceptually; TDD)
-- [ ] T033 [US2] Implement the backtest engine runBacktest (monthly rebalance, weighted monthly return, cumulative growth series, range adjustment + RunWarning) in src/lib/backtest.ts per contracts/backtest.md (depends on T031)
-- [ ] T034 [US2] Implement computeMetrics (total-growth, annualized-return/CAGR, volatility ×√12, max-drawdown) in src/lib/metrics.ts per contracts/backtest.md (depends on T033)
-- [ ] T035 [P] [US2] Create the GrowthChart wrapper (TradingView Lightweight Charts v5 AreaSeries, useRef/useEffect, autoSize, dispose on cleanup) in src/components/charts/GrowthChart.tsx
-- [ ] T035.5 [P] [US2] Create the DrawdownChart wrapper (TradingView Lightweight Charts v5 BaselineSeries, baseValue.price = 0, red-below/green-above fill, sr-only companion table) in src/components/charts/DrawdownChart.tsx
-- [ ] T036 [P] [US2] Create the MetricsPanel component (4 metric cards, each with label + displayValue + on-demand definition) in src/components/MetricsPanel.tsx
-- [ ] T037 [P] [US2] Create RunControls (starting-amount Input with `$` addon + month/year Date Picker constrained to the available range) using shadcn Input + DatePicker in src/features/visualize/RunControls.tsx
-- [ ] T038 [US2] Build the VisualizePanel feature (RunControls + GrowthChart + DrawdownChart + MetricsPanel + sr-only data table + blocked-run empty state) in src/features/visualize/VisualizePanel.tsx (depends on T035, T035.5, T036, T037)
-- [ ] T039 [US2] Create the useBacktest hook and wire the VisualizePanel into the App shell, syncing `a=`, `from=`, `to=` params (pushState on commit), in src/hooks/useBacktest.ts and src/App.tsx (depends on T033, T034, T038)
+- [X] T031 [P] [US2] Bundle the monthly total-return series JSON for all 5 asset classes (Fama–French equities + FRED Treasuries/gold, 2000–present) under src/data/returns/ with a build-time series-integrity check (ascending months, no duplicates/gaps) in src/data/returns/index.ts
+- [X] T032 [US2] Implement the format helpers (formatPercent, formatCurrency, formatMonth) as pure locale-stable functions in src/lib/format.ts (depends on T028 conceptually; TDD)
+- [X] T033 [US2] Implement the backtest engine runBacktest (monthly rebalance, weighted monthly return, cumulative growth series, range adjustment + RunWarning) in src/lib/backtest.ts per contracts/backtest.md (depends on T031)
+- [X] T034 [US2] Implement computeMetrics (total-growth, annualized-return/CAGR, volatility ×√12, max-drawdown) in src/lib/metrics.ts per contracts/backtest.md (depends on T033)
+- [X] T035 [P] [US2] Create the GrowthChart wrapper (TradingView Lightweight Charts v5 AreaSeries, useRef/useEffect, autoSize, dispose on cleanup) in src/components/charts/GrowthChart.tsx
+- [X] T035.5 [P] [US2] Create the DrawdownChart wrapper (TradingView Lightweight Charts v5 BaselineSeries, baseValue.price = 0, red-below/green-above fill, sr-only companion table) in src/components/charts/DrawdownChart.tsx
+- [X] T036 [P] [US2] Create the MetricsPanel component (4 metric cards, each with label + displayValue + on-demand definition) in src/components/MetricsPanel.tsx
+- [X] T037 [P] [US2] Create RunControls (starting-amount Input with `$` addon + month/year Date Picker constrained to the available range) using shadcn Input + DatePicker in src/features/visualize/RunControls.tsx
+- [X] T038 [US2] Build the VisualizePanel feature (RunControls + GrowthChart + DrawdownChart + MetricsPanel + sr-only data table + blocked-run empty state) in src/features/visualize/VisualizePanel.tsx (depends on T035, T035.5, T036, T037)
+- [X] T039 [US2] Create the useBacktest hook and wire the VisualizePanel into the App shell, syncing `a=`, `from=`, `to=` params (pushState on commit), in src/hooks/useBacktest.ts and src/App.tsx (depends on T033, T034, T038)
 
 **Checkpoint**: User Stories 1 AND 2 both work independently — a beginner can explore and then see real historical performance.
 
@@ -289,3 +289,10 @@ With multiple developers after Foundational completes:
 ## Phase 8: Convergence
 
 - [X] T066 Wire `assertDatasetValid()` (src/data/validate.ts) into the build or app entry so a malformed bundled dataset fails the build per FR-014 (partial) — the validator exists and is unit-tested (tests/unit/data.test.ts) but is never invoked by `npm run build` (`tsc -b && vite build`) or at runtime, so a bad strategy/asset-class definition would currently ship silently; complements T031's pending return-series build-time check
+
+---
+
+## Phase 9: Convergence
+
+- [ ] T067 Embed `DisclaimerCollapsible` (src/components/Disclaimer.tsx) inside each output panel — VisualizePanel (T038), ComparePanel (T046), RecommendPanel (T056) — so the detailed methodology disclosure is reachable from the chart / metrics table / recommendation it affects, not only from the global footer per FR-011 (partial)
+- [ ] T068 Add visible contextual labeling to the drawdown / growth view so a beginner cannot misread a deep dip as "this strategy is broken" or "you would have lost everything" — note when the selected period includes a known historical crash (2008 / 2020), state that drawdown is peak-to-trough (not a total loss), and label the figure as historical per FR-007 + spec edge case (market crash) (partial)

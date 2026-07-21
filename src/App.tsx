@@ -3,7 +3,9 @@ import { AppHeader } from '@/components/layout/AppHeader'
 import { AppFooter } from '@/components/layout/AppFooter'
 import { EmptyState } from '@/components/states'
 import { ExplorePanel } from '@/features/explore/ExplorePanel'
+import { VisualizePanel } from '@/features/visualize/VisualizePanel'
 import { useSelectedStrategy } from '@/hooks/useUrlState'
+import { useBacktest } from '@/hooks/useBacktest'
 import type { ViewKey } from '@/types'
 
 const DEFAULT_VIEW: ViewKey = 'explore'
@@ -22,7 +24,7 @@ function resolveView(value: string | null): ViewKey {
 
 /**
  * Placeholder panels for views not yet implemented. Each user story (Phases
- * 4–6) replaces its placeholder by wiring its feature panel into the shell.
+ * 5–6) replaces its placeholder by wiring its feature panel into the shell.
  */
 function PanelPlaceholder({ title, hint }: { title: string; hint: string }) {
   return <EmptyState title={title} description={hint} className="mx-auto max-w-2xl" />
@@ -31,6 +33,7 @@ function PanelPlaceholder({ title, hint }: { title: string; hint: string }) {
 export default function App() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { selectedStrategyId, setSelectedStrategy } = useSelectedStrategy()
+  const backtest = useBacktest()
   const view = resolveView(searchParams.get('view'))
 
   const handleViewChange = (next: ViewKey) => {
@@ -50,9 +53,17 @@ export default function App() {
           />
         )}
         {view === 'visualize' && (
-          <PanelPlaceholder
-            title="Backtest view coming soon"
-            hint="Pick a strategy, an amount, and a period to see real historical growth and the four headline numbers."
+          <VisualizePanel
+            strategyId={backtest.strategyId}
+            amount={backtest.amount}
+            startMonth={backtest.startMonth}
+            endMonth={backtest.endMonth}
+            minMonth={backtest.minMonth}
+            maxMonth={backtest.maxMonth}
+            result={backtest.result}
+            onCommit={backtest.commit}
+            onReset={backtest.reset}
+            onSelectStrategy={backtest.setSelectedStrategy}
           />
         )}
         {view === 'compare' && (

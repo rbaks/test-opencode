@@ -38,6 +38,36 @@ The bundled dataset is a **frozen snapshot** taken at build time. The specific
 fresh the numbers are. The data covers roughly 1990–present at monthly
 granularity.
 
+## Representative synthetic dataset (development vintage)
+
+The JSON currently bundled in `src/data/returns/series.json` is a
+**deterministic synthetic-representative dataset** produced by
+`scripts/generate-returns.mjs`. It exists so the app and its tests have a
+stable, realistic-shaped series to compute against during development when
+network access to the upstream sources is unavailable. It is **not a literal
+market observation**.
+
+What it preserves faithfully (so the educational story stays true):
+
+- Correct asset-class behavior — each series has its expected drift and
+  volatility (equities higher return and bumpier; Treasuries lower return and
+  calmer; gold somewhere between).
+- **Real crash months baked in** — the 2008 Global Financial Crisis
+  (Sep 2008–Mar 2009), the 2011 EM selloff, the 2018 Q4 correction, the 2020
+  COVID-19 drop, and the 2022 rate-shock year are all overlaid with their
+  approximate real magnitudes so FR-007 ("show the dips honestly") is real.
+- Anti-correlation during panics — Treasuries rise when equities fall
+  (flight-to-safety); gold mixes positively and negatively across events.
+- Strictly ascending months, no gaps, no duplicates — the same integrity
+  guarantees a real dataset must satisfy (validated at module load via
+  `assertSeriesIntegrity`).
+
+What it does **not** preserve: the exact numeric values of any real series.
+For production deployment, replace `src/data/returns/series.json` with the
+actual Fama–French + FRED monthly returns for the same span. The schema
+(`[{ assetId, points: [{ month, return }] }]`) and the integrity check are
+identical, so the swap is a pure file replacement — no other code changes.
+
 ## Refresh cadence
 
 **Annual.** A yearly refresh is sufficient for an educational tool whose point
