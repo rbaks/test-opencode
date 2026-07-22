@@ -201,3 +201,143 @@ export function iterMonths(start: string, end: string): string[] {
   }
   return out
 }
+
+/**
+ * One strategy's aligned backtest result inside a comparison plan.
+ * (US3 / T040 — only successful runs are included; failures are dropped.)
+ */
+export interface ComparisonRun {
+  strategyId: string
+  result: BacktestResult
+}
+
+/**
+ * Plain-language alignment notice produced when a comparison could not honor
+ * the user's exact requested span. Two distinct causes (often both at once):
+ *   - the selected strategies disagree on their earliest-data month, OR
+ *   - the user's requested start predates the latest common start month.
+ * Either way the chart still covers the same span for every line — we just
+ * say so plainly (data-model.md edge case, FR-007/FR-011).
+ */
+export interface ComparisonAlignmentWarning {
+  present: boolean
+  /** The aligned start month every line actually begins at. */
+  commonStartMonth?: string
+  /** The user's requested start, when it was shifted forward to commonStart. */
+  shortenedFrom?: string
+  /** True when strategies disagree on their earliest-data month. */
+  strategiesDiffer?: boolean
+}
+
+/**
+ * A comparison plan: the aligned, successful runs plus the common span they
+ * all cover. The UI renders one line per run on a shared time axis and an
+ * aligned metrics table (US3 / SC-003, SC-005).
+ */
+export interface ComparisonPlan {
+  runs: ComparisonRun[]
+  commonStartMonth: string
+  commonEndMonth: string
+  alignmentWarning: ComparisonAlignmentWarning
+}
+
+/**
+ * runComparison (T040) — aligns multiple strategies on the latest common
+ * start month so every line covers the exact same span.
+ *
+ * The rule (data-model.md edge case): a comparison can only start at the
+ * latest of the selected strategies' `earliestStartMonth` values — the month
+ * when every selected strategy finally has data. The user's requested start
+ * is honored when it falls at or after that common start; otherwise the span
+ * is shifted forward and an alignment warning is attached.
+ *
+ * Strategies that cannot contribute (their data starts after the requested
+ * end, or their run fails validation) are silently dropped — they never
+ * poison the comparison or throw (FR-012 graceful failure).
+ *
+ * Pure function: identical inputs → byte-identical outputs.
+ */
+export function runComparison(
+  strategies: Strategy[],
+  input: { startAmount: number; startMonth: string; endMonth: string },
+  series: Record<AssetCategoryId, ReturnSeries>,
+): ComparisonPlan {
+  if (strategies.length === 0) {
+    return {
+      runs: [],
+      commonStartMonth: input.startMonth,
+      commonEndMonth: input.endMonth,
+      alignmentWarning: { present: false },
+    }
+  }
+
+  // Step 1 — drop strategies whose data starts after the requested end. They
+  // cannot contribute to this span; including them would force every other
+  // line to start past the user's end month, producing an empty plan.
+  const usable = strategies.filter((s) => s.earliestStartMonth <= input.endMonth)
+
+  if (usable.length === 0) {
+    return {
+      runs: [],
+      commonStartMonth: input.startMonth,
+      commonEndMonth: input.endMonth,
+      alignmentWarning: { present: false },
+    }
+  }
+
+  // Step 2 — compute the latest common start month among the survivors and
+  // whether the strategies disagree on their earliest-data month.
+  let commonStart = usable[0]!.earliestStartMonth
+  let strategiesDiffer = false
+  for (const s of usable) {
+    if (s.earliestStartMonth !== commonStart) strategiesDiffer = true
+    if (s.earliestStartMonth > commonStart) commonStart = s.earliestStartMonth
+  }
+
+  // Step 3 — the aligned start honors the user's choice when it is already
+  // at or after the common start; otherwise it shifts forward to the common
+  // start so every line covers the same span.
+  const alignedStart = input.startMonth > commonStart ? input.startMonth : commonStart
+  const alignedEnd = input.endMonth
+
+  // Step 4 — run each survivor over the aligned span. Defensive: a run could
+  // still fail (e.g. INVALID_RANGE when alignedStart > alignedEnd on a
+  // pathological input) — failures are dropped, never thrown.
+  const runs: ComparisonRun[] = []
+  for (const strategy of usable) {
+    const result = runBacktest(
+      {
+        strategyId: strategy.id,
+        startAmount: input.startAmount,
+        startMonth: alignedStart,
+        endMonth: alignedEnd,
+      },
+      series,
+      strategy,
+    )
+    if (result.ok) {
+      runs.push({ strategyId: strategy.id, result })
+    }
+  }
+
+  // Step 5 — surface the alignment warning when strategies disagree OR the
+  // user's requested start was shifted forward. The UI shows this as a
+  // plain-language note so a beginner understands why the chart starts where
+  // it does (FR-011, spec edge case "Chosen period has missing data").
+  const userShifted = input.startMonth < commonStart
+  const present = strategiesDiffer || userShifted
+
+  return {
+    runs,
+    commonStartMonth: alignedStart,
+    commonEndMonth: alignedEnd,
+    alignmentWarning: present
+      ? {
+          present: true,
+          commonStartMonth: alignedStart,
+          shortenedFrom: userShifted ? input.startMonth : undefined,
+          strategiesDiffer,
+        }
+      : { present: false },
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { runBacktest } from '@/lib/backtest'
+import { runBacktest, runComparison } from '@/lib/backtest'
 import { RETURN_SERIES } from '@/data/returns'
 import { STRATEGIES, getStrategy } from '@/data/strategies'
 import { FIXTURE_STRATEGY, FIXTURE_SERIES } from '../fixtures/backtest'
@@ -231,6 +231,117 @@ describe('T040 — range adjustment + shortened-to-data warning (alignment helpe
     expect(r.run.dataRangeUsed.endMonth).toBe('2024-03')
     expect(r.run.warnings.some((w) => w.code === 'shortened-to-data')).toBe(true)
     expect(r.run.growthSeries[0]?.month).toBe('2024-02')
+  })
+})
+
+describe('T040 — runComparison aligns multiple runs on the latest common start month', () => {
+  it('aligns every successful run to the max of the strategies\' earliestStartMonth', () => {
+    // Two strategies that disagree on their earliest start month. The
+    // comparison must start every run at the later of the two so every line
+    // covers the exact same span (data-model.md edge case).
+    const earlyStrategy = { ...FIXTURE_STRATEGY, id: 'early', earliestStartMonth: '2024-01' }
+    const lateStrategy = { ...FIXTURE_STRATEGY, id: 'late', earliestStartMonth: '2024-02' }
+
+    const plan = runComparison(
+      [earlyStrategy, lateStrategy],
+      { startAmount: 1000, startMonth: '2024-01', endMonth: '2024-03' },
+      FIXTURE_SERIES,
+    )
+
+    expect(plan.commonStartMonth).toBe('2024-02')
+    expect(plan.commonEndMonth).toBe('2024-03')
+    expect(plan.runs).toHaveLength(2)
+    for (const { result } of plan.runs) {
+      expect(result.ok).toBe(true)
+      if (!result.ok) continue
+      expect(result.run.dataRangeUsed.startMonth).toBe('2024-02')
+      expect(result.run.growthSeries[0]?.month).toBe('2024-02')
+    }
+  })
+
+  it('flags an alignment warning when the strategies have different earliest-data months', () => {
+    const earlyStrategy = { ...FIXTURE_STRATEGY, id: 'early', earliestStartMonth: '2024-01' }
+    const lateStrategy = { ...FIXTURE_STRATEGY, id: 'late', earliestStartMonth: '2024-02' }
+
+    const plan = runComparison(
+      [earlyStrategy, lateStrategy],
+      { startAmount: 1000, startMonth: '2024-01', endMonth: '2024-03' },
+      FIXTURE_SERIES,
+    )
+
+    expect(plan.alignmentWarning.present).toBe(true)
+    // The warning references the latest common start so a beginner understands
+    // why the chart does not begin at their requested month.
+    expect(plan.alignmentWarning.commonStartMonth).toBe('2024-02')
+  })
+
+  it('does NOT flag an alignment warning when the strategies share the same earliest month', () => {
+    // All strategies start in 2024-01 → no misalignment, even though the
+    // requested start is exactly that month.
+    const a = { ...FIXTURE_STRATEGY, id: 'a', earliestStartMonth: '2024-01' }
+    const b = { ...FIXTURE_STRATEGY, id: 'b', earliestStartMonth: '2024-01' }
+
+    const plan = runComparison(
+      [a, b],
+      { startAmount: 1000, startMonth: '2024-01', endMonth: '2024-03' },
+      FIXTURE_SERIES,
+    )
+
+    expect(plan.alignmentWarning.present).toBe(false)
+    expect(plan.commonStartMonth).toBe('2024-01')
+  })
+
+  it('reports a range-shifted alignment when the user start predates the common start', () => {
+    // Even when strategies agree, a user start earlier than the data forces a
+    // shift to the common start — surfaced as shortenedFrom for the UI.
+    const a = { ...FIXTURE_STRATEGY, id: 'a', earliestStartMonth: '2024-02' }
+    const b = { ...FIXTURE_STRATEGY, id: 'b', earliestStartMonth: '2024-02' }
+
+    const plan = runComparison(
+      [a, b],
+      { startAmount: 1000, startMonth: '2024-01', endMonth: '2024-03' },
+      FIXTURE_SERIES,
+    )
+
+    expect(plan.commonStartMonth).toBe('2024-02')
+    expect(plan.alignmentWarning.present).toBe(true)
+    expect(plan.alignmentWarning.shortenedFrom).toBe('2024-01')
+  })
+
+  it('excludes strategies that fail validation (e.g. NO_DATA) instead of throwing', () => {
+    // A failing strategy must never poison the comparison — it is dropped, and
+    // the remaining strategies still align (FR-012 graceful failure).
+    const ok = { ...FIXTURE_STRATEGY, id: 'ok', earliestStartMonth: '2024-01' }
+    const doomed = {
+      ...FIXTURE_STRATEGY,
+      id: 'doomed',
+      earliestStartMonth: '2030-01', // outside the fixture's data span
+    }
+
+    const plan = runComparison(
+      [ok, doomed],
+      { startAmount: 1000, startMonth: '2024-01', endMonth: '2024-03' },
+      FIXTURE_SERIES,
+    )
+
+    expect(plan.runs).toHaveLength(1)
+    expect(plan.runs[0]!.result.ok).toBe(true)
+  })
+
+  it('produces aligned runs on the real bundled dataset for an arbitrary 3-strategy set', () => {
+    const picked = [getStrategy('60-40')!, getStrategy('all-weather')!, getStrategy('all-equity')!]
+    const plan = runComparison(
+      picked,
+      { startAmount: 10000, startMonth: '2000-01', endMonth: '2025-06' },
+      RETURN_SERIES,
+    )
+    // The bundled series are aligned (all share the same span), so every
+    // selected strategy shares the same earliestStartMonth and no warning fires.
+    expect(plan.runs).toHaveLength(3)
+    const starts = new Set(
+      plan.runs.map((r) => (r.result.ok ? r.result.run.dataRangeUsed.startMonth : null)),
+    )
+    expect(starts.size).toBe(1) // every run covers the same span
   })
 })
 

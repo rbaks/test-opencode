@@ -121,17 +121,17 @@
 
 ### Tests for User Story 3
 
-- [ ] T040 [P] [US3] Test the comparison aligns multiple runs on the latest common start month (data-model.md edge case) in tests/unit/backtest.test.ts
-- [ ] T041 [P] [US3] Test the ComparePanel renders one line per strategy on an overlaid chart plus an aligned metrics table in tests/components/compare.test.tsx
-- [ ] T042 [P] [US3] Test a plain-language alignment warning is shown when strategies have different earliest-data months in tests/components/compare.test.tsx
+- [X] T040 [P] [US3] Test the comparison aligns multiple runs on the latest common start month (data-model.md edge case) in tests/unit/backtest.test.ts
+- [X] T041 [P] [US3] Test the ComparePanel renders one line per strategy on an overlaid chart plus an aligned metrics table in tests/components/compare.test.tsx
+- [X] T042 [P] [US3] Test a plain-language alignment warning is shown when strategies have different earliest-data months in tests/components/compare.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T043 [P] [US3] Create the ComparisonChart wrapper (multiple TradingView Lightweight Charts LineSeries sharing one time axis, distinct `--chart-N` colors) in src/components/charts/ComparisonChart.tsx
-- [ ] T044 [P] [US3] Create the ComparisonTable component (rows = the four metrics, columns = selected strategies) using shadcn Table in src/components/ComparisonTable.tsx
-- [ ] T045 [P] [US3] Create the StrategyMultiSelect (pick 2–3 strategies with chips, enforced limit) using shadcn Combobox/ToggleGroup in src/features/compare/StrategyMultiSelect.tsx
-- [ ] T046 [US3] Build the ComparePanel feature (StrategyMultiSelect + shared RunControls + ComparisonChart + ComparisonTable + alignment note + sr-only summary) in src/features/compare/ComparePanel.tsx (depends on T043, T044, T045)
-- [ ] T047 [US3] Wire the ComparePanel into the App shell, syncing the `cmp=` param (comma-sep slugs) and reusing the shared amount/period, in src/App.tsx (depends on T039, T046)
+- [X] T043 [P] [US3] Create the ComparisonChart wrapper (multiple TradingView Lightweight Charts LineSeries sharing one time axis, distinct `--chart-N` colors) in src/components/charts/ComparisonChart.tsx
+- [X] T044 [P] [US3] Create the ComparisonTable component (rows = the four metrics, columns = selected strategies) using shadcn Table in src/components/ComparisonTable.tsx
+- [X] T045 [P] [US3] Create the StrategyMultiSelect (pick 2–3 strategies with chips, enforced limit) using shadcn Combobox/ToggleGroup in src/features/compare/StrategyMultiSelect.tsx
+- [X] T046 [US3] Build the ComparePanel feature (StrategyMultiSelect + shared RunControls + ComparisonChart + ComparisonTable + alignment note + sr-only summary) in src/features/compare/ComparePanel.tsx (depends on T043, T044, T045)
+- [X] T047 [US3] Wire the ComparePanel into the App shell, syncing the `cmp=` param (comma-sep slugs) and reusing the shared amount/period, in src/App.tsx (depends on T039, T046)
 
 **Checkpoint**: User Stories 1, 2, AND 3 all work independently — explore, visualize, and compare are all usable.
 
